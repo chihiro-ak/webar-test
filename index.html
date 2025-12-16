@@ -11,7 +11,13 @@
 <body style="margin:0; overflow:hidden;">
 
   <a-scene
-    mindar-image="imageTargetSrc: targets.mind; smoothing: true;"
+    mindar-image="
+      imageTargetSrc: targets.mind;
+      smoothing: true;
+      smoothingCount: 10;
+      smoothingTolerance: 0.01;
+      smoothingThreshold: 2;
+    "
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: true"
   >
@@ -30,8 +36,7 @@
       <a-plane
         id="blinkPlane"
         src="#f1"
-        position="0 0 0.02"
-        scale="0.9 0.9 1"
+        position="0 0 0"
         width="1"
         height="1"
         transparent="true"
