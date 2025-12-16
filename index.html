@@ -11,7 +11,7 @@
 <body style="margin:0; overflow:hidden;">
 
   <a-scene
-    mindar-image="imageTargetSrc: targets.mind;"
+    mindar-image="imageTargetSrc: targets.mind; smoothing: true;"
     vr-mode-ui="enabled: false"
     device-orientation-permission-ui="enabled: true"
   >
@@ -30,7 +30,8 @@
       <a-plane
         id="blinkPlane"
         src="#f1"
-        position="0 0 0"
+        position="0 0 0.02"
+        scale="0.9 0.9 1"
         width="1"
         height="1"
         transparent="true"
@@ -59,7 +60,7 @@
       }
 
       // 4秒ごとに瞬き
-      setInterval(blink, 4000);
+      setInterval(blink, 2000);
     });
   </script>
 
