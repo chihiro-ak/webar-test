@@ -61,12 +61,12 @@
       );
     }
 
-    /* ===== 共通：material.src を安全に更新 ===== */
+    /* ===== material src helper ===== */
     function setMaterialSrc(el, src) {
       el.setAttribute("material", "src", src);
     }
 
-    /* ========= target 0（瞬きアニメ） ========= */
+    /* ========= target 0（瞬き） ========= */
 
     const target0 = document.querySelector("#target0");
     const blinkPlane = document.querySelector("#blinkPlane");
@@ -85,44 +85,53 @@
 
     await preloadImages(blinkFrames);
 
-    const frameInterval = 120;   // 瞬きの速さ
-    const blinkInterval = 2000; // 瞬きの間隔
+    const frameInterval = 120;
+    const blinkInterval = 2000;
 
-    let frameTimer = null;
-    let blinkLoopTimer = null;
     let frameIndex = 0;
+    let frameTimeout = null;
+    let blinkTimeout = null;
+    let isBlinking = false;
 
     function playBlinkOnce() {
+      if (isBlinking) return;
+      isBlinking = true;
       frameIndex = 0;
-      setMaterialSrc(blinkPlane, blinkFrames[0]);
 
-      frameTimer = setInterval(() => {
-        frameIndex++;
-        if (frameIndex >= blinkFrames.length) {
-          clearInterval(frameTimer);
-          frameTimer = null;
-          return;
-        }
+      function nextFrame() {
         setMaterialSrc(blinkPlane, blinkFrames[frameIndex]);
-      }, frameInterval);
+        frameIndex++;
+
+        if (frameIndex < blinkFrames.length) {
+          frameTimeout = setTimeout(nextFrame, frameInterval);
+        } else {
+          isBlinking = false;
+        }
+      }
+
+      nextFrame();
     }
 
     function startBlinkLoop() {
-      if (blinkLoopTimer) return;
+      if (blinkTimeout) return;
 
       playBlinkOnce();
-      blinkLoopTimer = setInterval(playBlinkOnce, blinkInterval);
+
+      blinkTimeout = setInterval(() => {
+        playBlinkOnce();
+      }, blinkInterval);
     }
 
     function stopBlinkLoop() {
-      if (blinkLoopTimer) {
-        clearInterval(blinkLoopTimer);
-        blinkLoopTimer = null;
-      }
-      if (frameTimer) {
-        clearInterval(frameTimer);
-        frameTimer = null;
-      }
+      clearInterval(blinkTimeout);
+      clearTimeout(frameTimeout);
+
+      blinkTimeout = null;
+      frameTimeout = null;
+      isBlinking = false;
+      frameIndex = 0;
+
+      setMaterialSrc(blinkPlane, blinkFrames[0]);
     }
 
     target0.addEventListener("targetFound", startBlinkLoop);
@@ -142,6 +151,7 @@
 
   });
   </script>
+
 
 </body>
 </html>
