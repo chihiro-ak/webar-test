@@ -17,20 +17,10 @@
     device-orientation-permission-ui="enabled: false"
   >
 
-    <a-assets>
-      <img id="f1" src="images/01.png">
-      <img id="f2" src="images/02.png">
-      <img id="f3" src="images/03.png">
-      <img id="f4" src="images/04.png">
-      <img id="f5" src="images/05.png">
-      <img id="f6" src="images/2.png">
-    </a-assets>
-
     <!-- ========== targetIndex: 0（瞬き） ========== -->
-    <a-entity mindar-image-target="targetIndex: 0">
+    <a-entity id="target0" mindar-image-target="targetIndex: 0">
       <a-plane
         id="blinkPlane"
-        src="#f1"
         position="0 0 0.02"
         scale="0.9 0.9 1"
         width="1"
@@ -40,16 +30,15 @@
     </a-entity>
 
     <!-- ========== targetIndex: 1（静止画・60度立ち上げ） ========== -->
-    <a-entity mindar-image-target="targetIndex: 1">
+    <a-entity id="target1" mindar-image-target="targetIndex: 1">
       <a-plane
-        src="#f6"
+        id="staticPlane"
         width="1"
         height="1"
-        position="0 -1.0 0"
+        position="0 0.05 0"
         scale="0.9 0.9 1"
         rotation="40 0 0"
         transparent="true"
-
       ></a-plane>
     </a-entity>
 
@@ -58,23 +47,57 @@
 
   <script>
     window.addEventListener("DOMContentLoaded", () => {
-      const plane = document.querySelector("#blinkPlane");
 
-      const frames = [
-        "#f1", "#f2", "#f3", "#f4", "#f5",
-        "#f4", "#f3", "#f2", "#f1"
+      /* ========= target 0（瞬き） ========= */
+
+      const blinkPlane = document.querySelector("#blinkPlane");
+      const target0 = document.querySelector("#target0");
+
+      const blinkFrames = [
+        "images/01.webp",
+        "images/02.webp",
+        "images/03.webp",
+        "images/04.webp",
+        "images/05.webp",
+        "images/04.webp",
+        "images/03.webp",
+        "images/02.webp",
+        "images/01.webp"
       ];
+
+      let blinkLoaded = false;
       const frameInterval = 70;
 
       function blink() {
-        frames.forEach((frame, i) => {
+        blinkFrames.forEach((src, i) => {
           setTimeout(() => {
-            plane.setAttribute("src", frame);
+            blinkPlane.setAttribute("src", src);
           }, i * frameInterval);
         });
       }
 
-      setInterval(blink, 2000);
+      target0.addEventListener("targetFound", () => {
+        if (!blinkLoaded) {
+          blinkPlane.setAttribute("src", blinkFrames[0]);
+          blinkLoaded = true;
+        }
+        blink();
+        setInterval(blink, 2000);
+      });
+
+      /* ========= target 1（静止画） ========= */
+
+      const target1 = document.querySelector("#target1");
+      const staticPlane = document.querySelector("#staticPlane");
+      let staticLoaded = false;
+
+      target1.addEventListener("targetFound", () => {
+        if (!staticLoaded) {
+          staticPlane.setAttribute("src", "images/2.webp");
+          staticLoaded = true;
+        }
+      });
+
     });
   </script>
 
