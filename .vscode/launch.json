@@ -1,0 +1,23 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "WebAR HTTPS (http-server)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "http-server",
+      "args": [
+        ".",
+        "-S",
+        "-C",
+        "localhost.pem",
+        "-K",
+        "localhost-key.pem",
+        "-p",
+        "8080"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
