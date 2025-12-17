@@ -48,10 +48,21 @@
   <script>
   window.addEventListener("DOMContentLoaded", async () => {
 
-    /* ========= target 0（瞬き） ========= */
+    /* ===== preload helper ===== */
+    function preloadImages(urls) {
+      return Promise.all(
+        urls.map(src => new Promise(resolve => {
+          const img = new Image();
+          img.src = src;
+          img.onload = resolve;
+        }))
+      );
+    }
 
-    const blinkPlane = document.querySelector("#blinkPlane");
+    /* ========= target 0（瞬きアニメ） ========= */
+
     const target0 = document.querySelector("#target0");
+    const blinkPlane = document.querySelector("#blinkPlane");
 
     const blinkFrames = [
       "images/01.webp",
@@ -65,33 +76,55 @@
       "images/01.webp"
     ];
 
-    // --- ① preload ---
     await preloadImages(blinkFrames);
 
-    let blinkIntervalId = null;
-    const frameInterval = 70;
+    let frameTimer = null;
+    let blinkLoopTimer = null;
+    let frameIndex = 0;
 
-    function blink() {
-      blinkFrames.forEach((src, i) => {
-        setTimeout(() => {
-          blinkPlane.setAttribute("src", src);
-        }, i * frameInterval);
-      });
+    const frameInterval = 70;   // フレーム速度（瞬きの速さ）
+    const blinkInterval = 2000; // 瞬きの間隔（←これが重要）
+
+    function playBlinkOnce() {
+      frameIndex = 0;
+      blinkPlane.setAttribute("src", blinkFrames[0]);
+
+      frameTimer = setInterval(() => {
+        frameIndex++;
+        if (frameIndex >= blinkFrames.length) {
+          clearInterval(frameTimer);
+          frameTimer = null;
+          return;
+        }
+        blinkPlane.setAttribute("src", blinkFrames[frameIndex]);
+      }, frameInterval);
+    }
+
+    function startBlinkLoop() {
+      if (blinkLoopTimer) return;
+
+      playBlinkOnce();
+      blinkLoopTimer = setInterval(playBlinkOnce, blinkInterval);
+    }
+
+    function stopBlinkLoop() {
+      if (blinkLoopTimer) {
+        clearInterval(blinkLoopTimer);
+        blinkLoopTimer = null;
+      }
+      if (frameTimer) {
+        clearInterval(frameTimer);
+        frameTimer = null;
+      }
+      frameIndex = 0;
     }
 
     target0.addEventListener("targetFound", () => {
-      if (blinkIntervalId !== null) return;
-
-      blinkPlane.setAttribute("src", blinkFrames[0]);
-      blink();
-      blinkIntervalId = setInterval(blink, 2000);
+      startBlinkLoop();
     });
 
     target0.addEventListener("targetLost", () => {
-      if (blinkIntervalId !== null) {
-        clearInterval(blinkIntervalId);
-        blinkIntervalId = null;
-      }
+      stopBlinkLoop();
     });
 
     /* ========= target 1（静止画） ========= */
@@ -102,27 +135,11 @@
 
     await preloadImages([staticImage]);
 
-    let staticLoaded = false;
-
     target1.addEventListener("targetFound", () => {
-      if (!staticLoaded) {
-        staticPlane.setAttribute("src", staticImage);
-        staticLoaded = true;
-      }
+      staticPlane.setAttribute("src", staticImage);
     });
 
   });
-
-  /* ===== preload helper ===== */
-  function preloadImages(urls) {
-    return Promise.all(
-      urls.map(src => new Promise(resolve => {
-        const img = new Image();
-        img.src = src;
-        img.onload = resolve;
-      }))
-    );
-  }
   </script>
 
 
