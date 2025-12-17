@@ -46,60 +46,85 @@
   </a-scene>
 
   <script>
-    window.addEventListener("DOMContentLoaded", () => {
+  window.addEventListener("DOMContentLoaded", async () => {
 
-      /* ========= target 0（瞬き） ========= */
+    /* ========= target 0（瞬き） ========= */
 
-      const blinkPlane = document.querySelector("#blinkPlane");
-      const target0 = document.querySelector("#target0");
+    const blinkPlane = document.querySelector("#blinkPlane");
+    const target0 = document.querySelector("#target0");
 
-      const blinkFrames = [
-        "images/01.webp",
-        "images/02.webp",
-        "images/03.webp",
-        "images/04.webp",
-        "images/05.webp",
-        "images/04.webp",
-        "images/03.webp",
-        "images/02.webp",
-        "images/01.webp"
-      ];
+    const blinkFrames = [
+      "images/01.webp",
+      "images/02.webp",
+      "images/03.webp",
+      "images/04.webp",
+      "images/05.webp",
+      "images/04.webp",
+      "images/03.webp",
+      "images/02.webp",
+      "images/01.webp"
+    ];
 
-      let blinkLoaded = false;
-      const frameInterval = 70;
+    // --- ① preload ---
+    await preloadImages(blinkFrames);
 
-      function blink() {
-        blinkFrames.forEach((src, i) => {
-          setTimeout(() => {
-            blinkPlane.setAttribute("src", src);
-          }, i * frameInterval);
-        });
-      }
+    let blinkIntervalId = null;
+    const frameInterval = 70;
 
-      target0.addEventListener("targetFound", () => {
-        if (!blinkLoaded) {
-          blinkPlane.setAttribute("src", blinkFrames[0]);
-          blinkLoaded = true;
-        }
-        blink();
-        setInterval(blink, 2000);
+    function blink() {
+      blinkFrames.forEach((src, i) => {
+        setTimeout(() => {
+          blinkPlane.setAttribute("src", src);
+        }, i * frameInterval);
       });
+    }
 
-      /* ========= target 1（静止画） ========= */
+    target0.addEventListener("targetFound", () => {
+      if (blinkIntervalId !== null) return;
 
-      const target1 = document.querySelector("#target1");
-      const staticPlane = document.querySelector("#staticPlane");
-      let staticLoaded = false;
-
-      target1.addEventListener("targetFound", () => {
-        if (!staticLoaded) {
-          staticPlane.setAttribute("src", "images/2.webp");
-          staticLoaded = true;
-        }
-      });
-
+      blinkPlane.setAttribute("src", blinkFrames[0]);
+      blink();
+      blinkIntervalId = setInterval(blink, 2000);
     });
+
+    target0.addEventListener("targetLost", () => {
+      if (blinkIntervalId !== null) {
+        clearInterval(blinkIntervalId);
+        blinkIntervalId = null;
+      }
+    });
+
+    /* ========= target 1（静止画） ========= */
+
+    const target1 = document.querySelector("#target1");
+    const staticPlane = document.querySelector("#staticPlane");
+    const staticImage = "images/2.webp";
+
+    await preloadImages([staticImage]);
+
+    let staticLoaded = false;
+
+    target1.addEventListener("targetFound", () => {
+      if (!staticLoaded) {
+        staticPlane.setAttribute("src", staticImage);
+        staticLoaded = true;
+      }
+    });
+
+  });
+
+  /* ===== preload helper ===== */
+  function preloadImages(urls) {
+    return Promise.all(
+      urls.map(src => new Promise(resolve => {
+        const img = new Image();
+        img.src = src;
+        img.onload = resolve;
+      }))
+    );
+  }
   </script>
+
 
 </body>
 </html>
