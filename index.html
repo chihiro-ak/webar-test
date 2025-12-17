@@ -24,9 +24,9 @@
         src="images/01.webp"
         position="0 0 0.02"
         scale="0.9 0.9 1"
+        material="shader: flat; transparent: true"
         width="1"
         height="1"
-        transparent="true"
       ></a-plane>
     </a-entity>
 
@@ -40,7 +40,7 @@
         position="0 0.05 0"
         scale="0.9 0.9 1"
         rotation="40 0 0"
-        transparent="true"
+        material="shader: flat; transparent: true"
       ></a-plane>
     </a-entity>
 
@@ -59,6 +59,11 @@
           img.onload = resolve;
         }))
       );
+    }
+
+    /* ===== 共通：material.src を安全に更新 ===== */
+    function setMaterialSrc(el, src) {
+      el.setAttribute("material", "src", src);
     }
 
     /* ========= target 0（瞬きアニメ） ========= */
@@ -80,16 +85,16 @@
 
     await preloadImages(blinkFrames);
 
+    const frameInterval = 70;   // 瞬きの速さ
+    const blinkInterval = 2000; // 瞬きの間隔
+
     let frameTimer = null;
     let blinkLoopTimer = null;
     let frameIndex = 0;
 
-    const frameInterval = 70;   // フレーム速度（瞬きの速さ）
-    const blinkInterval = 2000; // 瞬きの間隔（←これが重要）
-
     function playBlinkOnce() {
       frameIndex = 0;
-      blinkPlane.setAttribute("src", blinkFrames[0]);
+      setMaterialSrc(blinkPlane, blinkFrames[0]);
 
       frameTimer = setInterval(() => {
         frameIndex++;
@@ -98,7 +103,7 @@
           frameTimer = null;
           return;
         }
-        blinkPlane.setAttribute("src", blinkFrames[frameIndex]);
+        setMaterialSrc(blinkPlane, blinkFrames[frameIndex]);
       }, frameInterval);
     }
 
@@ -118,16 +123,10 @@
         clearInterval(frameTimer);
         frameTimer = null;
       }
-      frameIndex = 0;
     }
 
-    target0.addEventListener("targetFound", () => {
-      startBlinkLoop();
-    });
-
-    target0.addEventListener("targetLost", () => {
-      stopBlinkLoop();
-    });
+    target0.addEventListener("targetFound", startBlinkLoop);
+    target0.addEventListener("targetLost", stopBlinkLoop);
 
     /* ========= target 1（静止画） ========= */
 
@@ -138,12 +137,11 @@
     await preloadImages([staticImage]);
 
     target1.addEventListener("targetFound", () => {
-      staticPlane.setAttribute("src", staticImage);
+      setMaterialSrc(staticPlane, staticImage);
     });
 
   });
   </script>
-
 
 </body>
 </html>
