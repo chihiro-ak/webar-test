@@ -108,6 +108,25 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
 
   /* =========================================================
+    target 2（静止画）
+  ========================================================= */
+
+  const target2 = document.querySelector("#target2");
+  const staticPlane2 = document.querySelector("#staticPlane2");
+  const staticImage2 = "images/3.webp";
+
+  await preloadImages([staticImage2]);
+
+  target2.addEventListener("targetFound", () => {
+    setMaterialSrc(staticPlane2, staticImage2);
+    setActivePlane(staticPlane2);
+  });
+
+  target2.addEventListener("targetLost", () => {
+    clearActivePlane(staticPlane2);
+  });
+
+  /* =========================================================
      UI操作（② ピンチ＋ドラッグ）
   ========================================================= */
 
