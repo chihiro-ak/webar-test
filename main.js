@@ -219,4 +219,117 @@ window.addEventListener("DOMContentLoaded", async () => {
     canvas.style.touchAction = "none";
   });
 
+  /* =========================================================
+     カメラ切替機能（内/外カメラ）
+  ========================================================= */
+
+  // video 要素を探す。MindAR が生成する要素を優先して返す
+  async function getMindarVideoElement(timeout = 3000) {
+    const scene = document.querySelector('a-scene');
+
+    // まず既知 ID をチェック
+    const known = document.getElementById('mindar-video');
+    if (known) return known;
+
+    // scene 内の video を優先
+    const tryFind = () => {
+      const fromScene = scene?.querySelector('video');
+      if (fromScene) return fromScene;
+      const any = document.querySelectorAll('video');
+      if (any && any.length > 0) {
+        // 再生中やサイズがあるものを優先
+        for (const v of any) {
+          if (v.readyState > 0 || v.videoWidth > 0 || v.autoplay) return v;
+        }
+        return any[0];
+      }
+      return null;
+    };
+
+    let video = tryFind();
+    if (video) return video;
+
+    const start = Date.now();
+    while (!video && Date.now() - start < timeout) {
+      await new Promise(res => setTimeout(res, 200));
+      video = tryFind();
+    }
+    return video;
+  }
+
+  // facing ('user'|'environment') から deviceId を選ぶためのヘルパ
+  async function getDeviceIdForFacing(facing) {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const cams = devices.filter(d => d.kind === 'videoinput');
+      if (!cams || cams.length === 0) return null;
+
+      // ラベルが取得できていればラベルで判定
+      const envRe = /back|rear|environment|rear camera|back camera|背面|外/i;
+      const userRe = /front|face|user|front camera|front-facing|前面|内/i;
+
+      let candidates = cams.filter(c => envRe.test(c.label));
+      if (facing === 'user') candidates = cams.filter(c => userRe.test(c.label));
+
+      if (candidates.length > 0) return candidates[0].deviceId;
+
+      // ラベル情報が取れない/マッチしない場合は、environment -> 最後、user -> 最初 を選ぶ
+      return facing === 'environment' ? cams[cams.length - 1].deviceId : cams[0].deviceId;
+    } catch (e) {
+      console.warn('enumerateDevices エラー', e);
+      return null;
+    }
+  }
+
+  // カメラ切替。まず facingMode を試し、失敗したら deviceId 指定で再試行する
+  async function switchCameraFacing(facingMode) {
+    const video = await getMindarVideoElement();
+    if (!video) {
+      alert('カメラ要素が見つかりません');
+      return;
+    }
+
+    // 既存ストリーム停止
+    try {
+      const oldStream = video.srcObject;
+      if (oldStream && oldStream.getTracks) oldStream.getTracks().forEach(t => t.stop());
+    } catch (e) {
+      console.warn('既存ストリーム停止エラー', e);
+    }
+
+    // try facingMode first
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode }, audio: false });
+      video.srcObject = stream;
+      video.muted = true;
+      await video.play();
+      return;
+    } catch (err) {
+      console.warn('facingMode 取得失敗、deviceId 指定で再試行します', err);
+    }
+
+    // fallback: deviceId 指定
+    const deviceId = await getDeviceIdForFacing(facingMode);
+    if (!deviceId) {
+      alert('使用可能なカメラが見つかりません');
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: deviceId } }, audio: false });
+      video.srcObject = stream;
+      video.muted = true;
+      await video.play();
+    } catch (err) {
+      console.error('deviceId 指定でのカメラ取得失敗', err);
+      alert('カメラの取得に失敗しました: ' + err.message);
+    }
+  }
+
+  // separate buttons for front/back camera
+  const btnFront = document.getElementById('btnFront');
+  const btnBack = document.getElementById('btnBack');
+  if (btnFront) btnFront.addEventListener('click', () => switchCameraFacing('user'));
+  if (btnBack) btnBack.addEventListener('click', () => switchCameraFacing('environment'));
+
 });
