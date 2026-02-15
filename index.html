@@ -369,15 +369,18 @@ btn.addEventListener("click", () => {
       ctx.drawImage(video, 0, 0, out.width, out.height);
       ctx.drawImage(gl, 0, 0, out.width, out.height);
 
+      // 画像名はタイムスタンプ
+      file_name = `${Date.now()}.png`;
+
       out.toBlob(async (blob) => {
-        const file = new File([blob], "ar_photo.png", { type: "image/png" });
+        const file = new File([blob], file_name, { type: "image/png" });
 
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({ files: [file], title: "AR Photo" });
         } else {
           const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
-          a.download = "ar_photo.png";
+          a.download = file_name;
           a.click();
         }
       });
