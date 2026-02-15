@@ -55,7 +55,7 @@
         scale="0.2 0.2 0.2"
       ></a-gltf-model>
     </a-entity> -->
-
+    
     <!-- ========== チェキ1（静止画表示） ========== -->
     <a-entity id="target2" mindar-image-target="targetIndex: 2">
 
@@ -74,9 +74,228 @@
         src="images/3_2.png"
         width="1"
         height="1.4"
+        position="0 0.07 0.30"
+        scale="1.35 1.25 1"
+        material="shader: flat; transparent: true"
+      ></a-plane>
+
+    </a-entity>
+
+    <!-- ========== チェキ2（静止画表示） ========== -->
+    <a-entity id="target3" mindar-image-target="targetIndex: 3">
+      <a-plane
+        id="staticPlaneBase"
+        src="images/4.png"
+        width="1"
+        height="1.4"
+        position="0 0.05 0"
+        scale="1.35 1.25 1"
+        material="shader: flat; transparent: true"
+      ></a-plane>
+      <!-- <a-plane
+        id="staticPlaneBase"
+        src="images/4_1.png"
+        width="1"
+        height="1.4"
+        position="0 0.05 0"
+        scale="1.35 1.25 1"
+        material="shader: flat; transparent: true"
+      ></a-plane>
+
+      <a-plane
+        id="staticPlaneFront"
+        src="images/4_2_s.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.10"
+        scale="1.35 1.25 1"
+        material="shader: flat; transparent: true"
+      ></a-plane>
+
+      <a-plane
+        id="staticPlaneFront"
+        src="images/4_2.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.15"
+        scale="1.35 1.25 1"
+        material="shader: flat; transparent: true"
+      ></a-plane>
+      
+      <a-plane
+        id="staticPlane3"
+        src="images/4_3.png"
+        width="1"
+        height="1.4"
         position="0 0.07 0.20"
         scale="1.35 1.25 1"
         material="shader: flat; transparent: true"
+      ></a-plane> -->
+
+      <a-plane
+        id="staticPlane5"
+        src="images/4_5_s.png"
+        width="1"
+        height="1.4"
+        position="0 0.04 0.15"
+        scale="1.5 1.35 1.1"
+        material="shader: flat; transparent: true"
+        animation__sway="
+          property: rotation;
+          dir: alternate;
+          dur: 3000;
+          easing: easeInOutSine;
+          loop: true;
+          to: 0 0 3
+        "
+      ></a-plane>
+
+      <a-plane
+        id="staticPlane6"
+        src="images/4_6_s.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.16"
+        scale="1.5 1.35 1.1"
+        material="shader: flat; transparent: true"
+        animation__sway="
+          property: rotation;
+          dir: alternate;
+          dur: 1500;
+          easing: easeInOutSine;
+          loop: true;
+          to: 0 0 5
+        "
+      ></a-plane>
+      
+      <a-plane
+        id="staticPlane7"
+        src="images/4_7_s.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.17"
+        scale="1.5 1.35 1.1"
+        material="shader: flat; transparent: true"
+        
+        animation__sway="
+          property: rotation;
+          dir: alternate;
+          dur: 2000;
+          easing: easeInOutSine;
+          loop: true;
+          to: 0 0 -4
+        "
+      ></a-plane>
+
+      <a-plane
+        id="effectPlane"
+        src="images/4_4.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.30"
+        scale="1.5 1.35 1.1"
+        material="shader: flat; transparent: true"
+        animation__fade="
+          property: material.opacity;
+          dir: alternate;
+          dur: 1000;
+          easing: easeInOutSine;
+          loop: true;
+          from: 0.2;
+          to: 1
+        "
+      ></a-plane>
+      
+      <a-plane
+        id="effectPlane2"
+        src="images/4_4_.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.30"
+        scale="1.5 1.35 1.1"
+        material="shader: flat; transparent: true"
+        animation__fade="
+          property: material.opacity;
+          dir: alternate;
+          dur: 1000;
+          easing: easeInOutSine;
+          loop: true;
+          from: 1;
+          to: 0.2
+        "
+      ></a-plane>
+
+      
+      <!-- <a-plane
+        id="effectPlane_loop"
+        src="images/3_8.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.32"
+        scale="1.7 1.5 1.1"
+        material="shader: flat; transparent: true"
+        animation__spin="
+          property: rotation;
+          dur: 30000;
+          loop: true;
+          to: 0 0 360
+        "
+      ></a-plane> -->
+
+      <a-plane
+        id="staticPlane6"
+        src="images/4_6.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.40"
+        scale="1.5 1.35 1.1"
+        material="shader: flat; transparent: true"
+        animation__sway="
+          property: rotation;
+          dir: alternate;
+          dur: 1500;
+          easing: easeInOutSine;
+          loop: true;
+          to: 0 0 8
+        "
+      ></a-plane>
+
+      <a-plane
+        id="staticPlane7"
+        src="images/4_7.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.42"
+        scale="1.5 1.35 1.1"
+        material="shader: flat; transparent: true"
+        
+        animation__sway="
+          property: rotation;
+          dir: alternate;
+          dur: 2000;
+          easing: easeInOutSine;
+          loop: true;
+          to: 0 0 -7
+        "
+
+      ></a-plane>
+
+      <a-plane
+        id="staticPlane5"
+        src="images/4_5.png"
+        width="1"
+        height="1.4"
+        position="0 0.07 0.50"
+        scale="1.5 1.35 1.1"
+        material="shader: flat; transparent: true"
+        animation__sway="
+          property: rotation;
+          dir: alternate;
+          dur: 3000;
+          easing: easeInOutSine;
+          loop: true;
+          to: 0 0 5
+        "
       ></a-plane>
 
     </a-entity>
@@ -84,9 +303,8 @@
 
     
     <!-- ========== チェキ2 ========== -->
-    <a-entity id="target3" mindar-image-target="targetIndex: 3">
+    <!-- <a-entity id="target3" mindar-image-target="targetIndex: 3">
 
-      <!-- ベース -->
       <a-plane
         id="staticPlaneBase"
         src="images/4_1.png"
@@ -98,7 +316,6 @@
       ></a-plane>
 
 
-      <!-- 文字影 -->
       <a-plane
         id="staticPlaneShadow"
         src="images/3_2_s.png"
@@ -118,7 +335,6 @@
       ></a-plane>
 
 
-      <!-- エフェクト -->
       <a-plane
         id="layerEffect"
         src="images/3_3.png"
@@ -148,7 +364,6 @@
       ></a-plane>
 
 
-      <!-- 文字 -->
       <a-plane
         id="staticPlaneText"
         src="images/3_2.png"
@@ -167,8 +382,7 @@
         "
       ></a-plane>
 
-
-    </a-entity>
+    </a-entity> -->
 
     <a-camera position="0 0 0"></a-camera>
   </a-scene>
