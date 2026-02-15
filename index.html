@@ -1,85 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+
+    #captureButton {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: white;
+      border: 6px solid rgba(255,255,255,0.6);
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.2);
+      z-index: 9999;
+    }
+
+    #captureButton:active {
+      transform: translateX(-50%) scale(0.95);
+    }
+  </style>
 </head>
 
-<body style="margin:0; overflow:hidden;">
+<body>
 
-  <a-scene
-    mindar-image="imageTargetSrc: targets.mind; smoothing: true; filterMinCF:0.0001; filterBeta: 0.001"
-    vr-mode-ui="enabled: false"
-    color-space="sRGB"
-    device-orientation-permission-ui="enabled: false"
-  >
-    <a-entity light="type: ambient; intensity: 1"></a-entity>
-    <a-entity light="type: directional; intensity: 0.8" position="1 2 1"></a-entity>
+<a-scene
+  mindar-image="imageTargetSrc: targets.mind; smoothing: true; filterMinCF:0.0001; filterBeta: 0.001"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  renderer="alpha: true; preserveDrawingBuffer: true"
+>
+  <a-entity light="type: ambient; intensity: 1"></a-entity>
 
-    <!-- ========== targetIndex: 0（瞬き） ========== -->
-    <a-entity id="target0" mindar-image-target="targetIndex: 0">
-      <a-plane
-        id="blinkPlane"
-        src="images/01.webp"
-        position="0 0 0.02"
-        scale="0.9 0.9 1"
-        material="shader: flat; transparent: true"
-        width="1"
-        height="1"
-      ></a-plane>
-    </a-entity>
+  <!-- ===== target 0 ===== -->
+  <a-entity id="target0" mindar-image-target="targetIndex: 0">
+    <a-plane
+      id="blinkPlane"
+      src="images/01.webp"
+      position="0 0 0.02"
+      scale="0.9 0.9 1"
+      material="shader: flat; transparent: true"
+      width="1"
+      height="1"
+    ></a-plane>
+  </a-entity>
 
-    <!-- ========== targetIndex: 1（静止画・60度立ち上げ） ========== -->
-    <a-entity id="target1" mindar-image-target="targetIndex: 1">
-      <a-plane
-        id="staticPlane"
-        src="images/2.webp"
-        width="1"
-        height="1"
-        position="0 0.05 0"
-        scale="0.9 0.9 1"
-        rotation="20 0 0"
-        material="shader: flat; transparent: true"
-      ></a-plane>
-    </a-entity>
+  <!-- ===== target 1 ===== -->
+  <a-entity mindar-image-target="targetIndex: 1">
+    <a-plane
+      src="images/2.webp"
+      width="1"
+      height="1"
+      position="0 0.05 0"
+      rotation="20 0 0"
+      scale="0.9 0.9 1"
+      material="shader: flat; transparent: true"
+    ></a-plane>
+  </a-entity>
 
-    <!-- ========== チェキ1（3Dモデル表示） ========== -->
-    <!-- <a-entity id="target2" mindar-image-target="targetIndex: 2">
-      <a-gltf-model
-        id="model3"
-        src="models/sample.glb"
-        position="0 0 0"
-        scale="0.2 0.2 0.2"
-      ></a-gltf-model>
-    </a-entity> -->
-    
-    <!-- ========== チェキ1（静止画表示） ========== -->
-    <a-entity id="target2" mindar-image-target="targetIndex: 2">
+  <!-- ===== target 2 ===== -->
+  <a-entity mindar-image-target="targetIndex: 2">
+    <a-plane
+      src="images/3_1.png"
+      width="1"
+      height="1.4"
+      position="0 0.05 0"
+      scale="1.15 1.15 1"
+      material="shader: flat; transparent: true"
+    ></a-plane>
 
-      <a-plane
-        id="staticPlaneBase"
-        src="images/3_1.png"
-        width="1"
-        height="1.4"
-        position="0 0.05 0"
-        scale="1.15 1.15 1"
-        material="shader: flat; transparent: true"
-      ></a-plane>
+    <a-plane
+      src="images/3_2.png"
+      width="1"
+      height="1.4"
+      position="0 0.07 0.30"
+      scale="1.35 1.25 1"
+      material="shader: flat; transparent: true"
+    ></a-plane>
 
-      <a-plane
-        id="staticPlaneFront"
-        src="images/3_2.png"
-        width="1"
-        height="1.4"
-        position="0 0.07 0.30"
-        scale="1.35 1.25 1"
-        material="shader: flat; transparent: true"
-      ></a-plane>
-
-    </a-entity>
+  </a-entity>
 
     <!-- ========== チェキ2（静止画表示） ========== -->
     <a-entity id="target3" mindar-image-target="targetIndex: 3">
@@ -299,95 +310,90 @@
       ></a-plane>
 
     </a-entity>
-   
+  <a-camera position="0 0 0"></a-camera>
+</a-scene>
 
-    
-    <!-- ========== チェキ2 ========== -->
-    <!-- <a-entity id="target3" mindar-image-target="targetIndex: 3">
+<button id="captureButton"></button>
+<canvas id="captureCanvas" style="display:none;"></canvas>
 
-      <a-plane
-        id="staticPlaneBase"
-        src="images/4_1.png"
-        width="1"
-        height="1.4"
-        position="0 0.05 0"
-        scale="1.15 1.15 1"
-        material="shader: flat; transparent: true"
-      ></a-plane>
+<script>
+/* ===============================
+   瞬き
+=============================== */
+window.addEventListener("DOMContentLoaded", () => {
+  const target0 = document.querySelector("#target0");
+  const blinkPlane = document.querySelector("#blinkPlane");
 
+  const frames = [
+    "images/01.webp","images/02.webp","images/03.webp",
+    "images/04.webp","images/05.webp",
+    "images/04.webp","images/03.webp","images/02.webp","images/01.webp"
+  ];
 
-      <a-plane
-        id="staticPlaneShadow"
-        src="images/3_2_s.png"
-        width="1"
-        height="1.4"
-        position="0 0.05 0.03"
-        scale="1.3 1.2 1"
-        material="shader: flat; transparent: true"
-        animation__sway="
-          property: rotation;
-          dir: alternate;
-          dur: 2000;
-          easing: easeInOutSine;
-          loop: true;
-          to: 0 0 3
-        "
-      ></a-plane>
+  let i = 0, timer = null;
 
+  const play = () => {
+    i = 0;
+    const step = () => {
+      blinkPlane.setAttribute("material","src",frames[i++]);
+      if (i < frames.length) setTimeout(step,120);
+    };
+    step();
+  };
 
-      <a-plane
-        id="layerEffect"
-        src="images/3_3.png"
-        width="1.2"
-        height="1.6"
-        position="0 0.06 0.14"
-        scale="1.2 1.2 1"
-        material="shader: flat; transparent: true; opacity: 0.9"
+  target0.addEventListener("targetFound", () => {
+    play();
+    timer = setInterval(play, 2000);
+  });
 
-        animation__fade="
-          property: material.opacity;
-          dir: alternate;
-          dur: 1000;
-          easing: easeInOutSine;
-          loop: true;
-          from: 0.4;
-          to: 0.7
-        "
-        animation__sway="
-          property: rotation;
-          dir: alternate;
-          dur: 4000;
-          easing: easeInOutSine;
-          loop: true;
-          to: 0 0 -6
-        "
-      ></a-plane>
+  target0.addEventListener("targetLost", () => {
+    clearInterval(timer);
+    blinkPlane.setAttribute("material","src",frames[0]);
+  });
+});
 
+/* ===============================
+   撮影（AR確実反映版）
+=============================== */
+const btn = document.getElementById("captureButton");
+const out = document.getElementById("captureCanvas");
 
-      <a-plane
-        id="staticPlaneText"
-        src="images/3_2.png"
-        width="1"
-        height="1.4"
-        position="0 0.07 0.20"
-        scale="1.35 1.25 1"
-        material="shader: flat; transparent: true"
-        animation__sway="
-          property: rotation;
-          dir: alternate;
-          dur: 2000;
-          easing: easeInOutSine;
-          loop: true;
-          to: 0 0 5
-        "
-      ></a-plane>
+btn.addEventListener("click", () => {
+  const scene = document.querySelector("a-scene");
+  const gl = scene.renderer.domElement;
+  const video = document.querySelector("video");
 
-    </a-entity> -->
+  if (!video || video.videoWidth === 0) return;
 
-    <a-camera position="0 0 0"></a-camera>
-  </a-scene>
+  // ✅ 次の描画フレームを2回待つ（重要）
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      out.width = gl.width;
+      out.height = gl.height;
 
-    <script src="main.js"></script>
+      const ctx = out.getContext("2d");
+
+      // 背景カメラ
+      ctx.drawImage(video, 0, 0, out.width, out.height);
+      // AR（WebGL）
+      ctx.drawImage(gl, 0, 0, out.width, out.height);
+
+      out.toBlob(async (blob) => {
+        const file = new File([blob], "ar_photo.png", { type: "image/png" });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: "AR Photo" });
+        } else {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "ar_photo.png";
+          a.click();
+        }
+      });
+    });
+  });
+});
+</script>
 
 </body>
 </html>
